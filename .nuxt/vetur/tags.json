@@ -2,6 +2,9 @@
   "CommonCarousel": {
     "description": "Auto imported from components/common/carousel.vue"
   },
+  "CommonItemRestaurant": {
+    "description": "Auto imported from components/common/itemRestaurant.vue"
+  },
   "PagesDetailsInfosRestaurantComponent": {
     "description": "Auto imported from components/pages/details/InfosRestaurantComponent.vue"
   },
@@ -17,9 +20,6 @@
   "PagesFavorisDisplayFavourites": {
     "description": "Auto imported from components/pages/favoris/DisplayFavourites.vue"
   },
-  "PagesIndexListRestaurant": {
-    "description": "Auto imported from components/pages/index/listRestaurant.vue"
-  },
   "PagesProfilDisplayHistory": {
     "description": "Auto imported from components/pages/profil/DisplayHistory.vue"
   },
@@ -28,5 +28,8 @@
   },
   "PagesProfilLogin": {
     "description": "Auto imported from components/pages/profil/login.vue"
+  },
+  "PagesIndexListRestaurant": {
+    "description": "Auto imported from components/pages/index/listRestaurant.vue"
   }
 }

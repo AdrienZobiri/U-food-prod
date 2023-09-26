@@ -3,21 +3,18 @@
     "name": "connexion",
     "path": "/connexion",
     "component": "/Users/adrienzobiri/Documents/Laval/GLO-3102 Développement d'applications Web/U-food-prod/pages/connexion.vue",
-    "chunkName": "pages/connexion",
-    "_name": "_652f85c5"
+    "chunkName": "pages/connexion"
   },
   {
     "name": "restaurant",
     "path": "/restaurant",
     "component": "/Users/adrienzobiri/Documents/Laval/GLO-3102 Développement d'applications Web/U-food-prod/pages/restaurant.vue",
-    "chunkName": "pages/restaurant",
-    "_name": "_07902af1"
+    "chunkName": "pages/restaurant"
   },
   {
     "name": "index",
     "path": "/",
     "component": "/Users/adrienzobiri/Documents/Laval/GLO-3102 Développement d'applications Web/U-food-prod/pages/index.vue",
-    "chunkName": "pages/index",
-    "_name": "_b2058564"
+    "chunkName": "pages/index"
   }
 ]

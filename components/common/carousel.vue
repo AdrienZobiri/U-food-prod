@@ -1,5 +1,5 @@
 <template>
-    <div class="boxContentCarousel">
+    <div class="boxContentCarousel" @click="goToRestaurant(id)">
         <v-carousel :show-arrows="false" :cycle="true" class="carousel" hide-delimiters>
             <v-carousel-item
                 v-for="(item,i) in items"
@@ -17,12 +17,15 @@ export default {
         items: {
             type: Array,
             required: true
+        },
+        id: {
+            type: String,
+            required: true
         }
     },
     methods: {
-        goRest() {
-            console.log('goRest');
-            this.$emit('goRest');
+        goToRestaurant(id) {
+            this.$router.push({ name: 'restaurant', params: { id: id } })
         }
     }
 }

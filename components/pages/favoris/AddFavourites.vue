@@ -150,9 +150,9 @@ export default {
                 const data = {
                     'id': this.restaurantId
                 };
-                // console.log('DATA', data, this.restaurantId);
+                console.log('DATA', data, this.restaurantId);
                 const response = await this.$axios.post(`/favorites/${idlist}/restaurants`, data, { headers: headers });
-                // console.log('ADD RESTO', response.data);
+                console.log('ADD RESTO', response.data);
                 // for (let i = 0; response.data.items.length; i++) {
                 //     if (response.data.items[i].id == this.restaurantId) {
                 //         this.already = true;
