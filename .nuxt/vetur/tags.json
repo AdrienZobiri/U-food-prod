@@ -1,0 +1,32 @@
+{
+  "CommonCarousel": {
+    "description": "Auto imported from components/common/carousel.vue"
+  },
+  "PagesDetailsInfosRestaurantComponent": {
+    "description": "Auto imported from components/pages/details/InfosRestaurantComponent.vue"
+  },
+  "PagesDetailsMapRestaurantComponent": {
+    "description": "Auto imported from components/pages/details/MapRestaurantComponent.vue"
+  },
+  "PagesDetailsPhotosRestaurantComponent": {
+    "description": "Auto imported from components/pages/details/PhotosRestaurantComponent.vue"
+  },
+  "PagesFavorisAddFavourites": {
+    "description": "Auto imported from components/pages/favoris/AddFavourites.vue"
+  },
+  "PagesFavorisDisplayFavourites": {
+    "description": "Auto imported from components/pages/favoris/DisplayFavourites.vue"
+  },
+  "PagesIndexListRestaurant": {
+    "description": "Auto imported from components/pages/index/listRestaurant.vue"
+  },
+  "PagesProfilDisplayHistory": {
+    "description": "Auto imported from components/pages/profil/DisplayHistory.vue"
+  },
+  "PagesProfilDisplayUserSettings": {
+    "description": "Auto imported from components/pages/profil/DisplayUserSettings.vue"
+  },
+  "PagesProfilLogin": {
+    "description": "Auto imported from components/pages/profil/login.vue"
+  }
+}
