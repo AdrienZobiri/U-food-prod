@@ -16,17 +16,18 @@
             v-model="modal"
             max-width="290"
         >
-            <v-card 
+            <v-card
                 class="d-flex justify-center flex-column pa-8"
             >
                 <v-card-title class="text-h5">
                     Visit Card
                 </v-card-title>
-                <v-textarea
-                    label="Comment"
-                    v-model="comment"
-                    auto-grow>
-                </v-textarea>
+                <v-text-field
+                    dense
+                    label="Date"
+                    v-model="dateVisit"
+                    type="date"
+                ></v-text-field>
                 <v-text-field
                     dense
                     label="Rate (1-5)"
@@ -35,11 +36,11 @@
                     min="0"
                     v-model="rate"
                 ></v-text-field>
-                <v-text-field
-                    dense
-                    label="Date"
-                    v-model="DateVisit"
-                ></v-text-field>
+                <v-textarea
+                    label="Comment"
+                    v-model="comment"
+                    auto-grow>
+                </v-textarea>
                 <v-btn @click="newVisite()">
                     Validate
                 </v-btn>
@@ -67,7 +68,7 @@ export default {
             modal: false,
             comment: '',
             rate: 0,
-            DateVisit: ''
+            dateVisit: ''
         }
     },
     mounted() {
@@ -76,13 +77,26 @@ export default {
         }
     },
     methods: {
-        newVisite() {
-            console.log("test")
-            // this.$emit('newVisite', {
-            //     comment: this.comment,
-            //     rate: this.rate,
-            //     DateVisit: this.DateVisit
-            // })
+        async newVisite() {
+            const params = {
+                restaurant_id: this.restaurant.id,
+                comment: this.comment,
+                rating: this.rate,
+                date: this.dateVisit,
+                access_token: this.$cookies.get('token')
+            };
+
+            console.log(this.restaurant);
+            console.log(params);
+            try {
+                const id = this.$cookies.get('id');
+                const response = await this.$axios.post(`/users/${id}/restaurants/visits`, params);
+
+                console.log(response);
+                location.reload();
+            } catch (e) {
+                console.log(e)
+            }
         }
     }
 }

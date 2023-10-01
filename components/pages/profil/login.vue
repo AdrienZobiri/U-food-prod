@@ -10,6 +10,7 @@
         </div>
         <button @click="login()" class="loginBtn">Login</button>
         <div class="text-subtitle-1 noAccount " @click="goToSignUp()">No account ?<span class="text-subtitle-1 signUp">SignUp</span></div>
+        <div class="red--text" :type="erno ? 'hidden' : 'text'"> {{ erno }} </div>
     </div>
 </template>
 
@@ -20,6 +21,7 @@ export default {
         return {
             email: '',
             password: '',
+            erno: ''
         }
     },
     methods: {
@@ -28,19 +30,26 @@ export default {
                 email: this.email,
                 password: this.password
             };
-            const response = await this.$axios.post('/login', params);
-            await this.storeCookies(response.data);
-            this.$router.push('/');
-            location.reload();
+
+            try {
+                const response = await this.$axios.post('/login', params);
+
+                await this.storeCookies(response.data);
+                await this.$router.push('/');
+                location.reload();
+            } catch (error) {
+                this.erno = "Bad credentials"
+            }
+
         },
         async storeCookies(data) {
-            this.$cookies.set('token', data.token);
-            this.$cookies.set('id', data.id);
-            this.$cookies.set('email', data.email);
-            this.$cookies.set('name', data.name);
-            this.$cookies.set('rating', data.rating);
-            this.$cookies.set('followers', data.followers);
-            this.$cookies.set('following', data.following);
+            await this.$cookies.set('token', data.token);
+            await this.$cookies.set('id', data.id);
+            await this.$cookies.set('email', data.email);
+            await this.$cookies.set('name', data.name);
+            await this.$cookies.set('rating', data.rating);
+            await this.$cookies.set('followers', data.followers);
+            await this.$cookies.set('following', data.following);
         },
         goToSignUp() {
             this.$router.push('/connexion')

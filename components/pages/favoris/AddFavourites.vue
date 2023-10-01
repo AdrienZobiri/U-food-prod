@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="400">
+    <v-dialog v-model="dialog" persistent max-width="450">
         <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on">
                 <!-- If not already in favourites -->
@@ -9,23 +9,24 @@
             </v-btn>
         </template>
         <v-card class="pa-6">
-            <v-card-title class="text-h5">
-                Add to favourites
+            <v-card-title class="justify-center text-h5">
+                FAVORITES
             </v-card-title>
             <v-card-text>
                 <!-- Create new list -->
+                <v-switch v-model="regis" :label="`New list ?`" />
                 <v-text-field v-if="regis" v-model="newListName" label="Name of the list"
                     :rules="[v => !!v || 'Name required', v => /^[a-zA-Z0-9]+$/.test(v) || 'Name invalid']" :counter="50"
                     :maxlength="50" required></v-text-field>
-                <v-switch v-model="regis" :label="`New list ?`" />
-                <v-btn v-if="regis" color="green darken-1" text @click="createNewList()">
+                <v-btn v-if="regis" :disabled="!newListName" color="green darken-1" text @click="createNewList()">
                     Create
                 </v-btn>
+                <v-switch v-model="showAll" :label="`Display all lists`" @click="getLists()" />
                 <!-- list all lists -->
 
                 <v-list>
-                    <div class="text-subtitle-1">List Favorits</div>
-                    <v-list-group v-for="item in listsFavorits" :key="item.id" v-model="item.active"
+                    <div class="text-subtitle-1">List FAVORITES</div>
+                    <v-list-group v-for="item in listsfavorits" :key="item.id" v-model="item.active"
                         :prepend-icon="item.action" no-action>
                         <template v-slot:activator>
                             <v-list-item-content @click="listActive = item.id">
@@ -40,25 +41,37 @@
 
                         <v-list-item v-for="child in item.restaurants" :key="child.id">
                             <v-list-item-content>
-                                <v-list-item-title v-text="child.id"></v-list-item-title>
+                                <div class="d-flex">
+                                    <v-btn @click="deleteResto(item.id, child.id)" small icon>
+                                        <v-icon>mdi-tag-remove</v-icon>
+                                    </v-btn>
+                                    <div class="text-subtitle-1" v-text="child.name"></div>
+                                </div>
                             </v-list-item-content>
                         </v-list-item>
                     </v-list-group>
                 </v-list>
-                <div class="d-flex justify-space-around">
-                    <v-btn rounded @click="pagePrev()">
-                        <v-icon>mdi-arrow-left</v-icon>
-                    </v-btn>
-                    <!-- <span>{{ this.pageList }}</span> -->
-                    <v-text-field v-model="pageList" @keyup.enter="getPageLists()" :label="pageList.toString()"
-                        type="number" class="px-8"></v-text-field>
-                    <v-btn rounded @click="pageNext()">
-                        <v-icon>mdi-arrow-right</v-icon>
-                    </v-btn>
-                </div>
-                <v-btn color="red darken-1" text @click="deleteAllLists()">
+                <!-- button action -->
+                <v-container fluid>
+                    <v-row class="justify-center pa-2">
+                        <v-col class="d-flex justify-center">
+                            <v-btn rounded @click="pagePrev()">
+                                <v-icon>mdi-arrow-left</v-icon>
+                            </v-btn>
+                        </v-col>
+                        <v-col>
+                            <v-text-field v-model="pageList" @keyup.enter="getLists()" type="number"></v-text-field>
+                        </v-col>
+                        <v-col class="d-flex justify-center">
+                            <v-btn rounded @click="pageNext()">
+                                <v-icon>mdi-arrow-right</v-icon>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-container>
+                <!-- <v-btn color="red darken-1" text @click="deleteAllLists()">
                     <div class="text-subtitle-1">DELETTE ALL</div>
-                </v-btn>
+                </v-btn> -->
             </v-card-text>
             <!-- close dialog -->
             <v-card-actions>
@@ -67,6 +80,7 @@
                     Cancel
                 </v-btn>
                 <v-btn color="green darken-1" text @click="dialog = false, addResto(listActive)">
+                    <!-- maybe error when no select -->
                     Ok
                 </v-btn>
             </v-card-actions>
@@ -75,19 +89,19 @@
 </template>
 
 <script>
-import qs from 'querystring';
 export default {
     name: 'AddFavourites',
     data() {
         return {
             listActive: '',
             dialog: false,
-            listsFavorits: [],
+            listsfavorits: [],
             already: false,
             newListName: '',
             regis: false,
             userId: this.$cookies.get('id'),
-            pageList: 0
+            pageList: 0,
+            showAll: false,
         }
     },
     props: {
@@ -97,46 +111,54 @@ export default {
         }
     },
     async mounted() {
-        // await this.checkFavorites();
-        await this.getPageLists();
+        await this.getLists();
         // await this.getList('607b3d9f1fa5370004c24447');
     },
     methods: {
-        async checkFavorites() {
-            try {
-                const params = {
-                    access_token: this.$cookies.get('token'),
-                };
-                const response = await this.$axios.get('/favorites', { params });
-                console.log('RESP', response.data);
-                for (let i = 0; response.data.items.length; i++) {
-                    if (response.data.items[i].id == this.restaurantId) {
-                        this.already = true;
+        // create a new list of favorite and add this restaurant to this list
+        async createNewList() {
+            const headers = {
+                Authorization: this.$cookies.get('token'),
+                name: this.newListName,
+            };
+            const response = await this.$axios.post(`/favorites`, { headers: headers });
+            this.listsfavorits.push(response.data);
+        },
+        // get page lists of favorites
+        async getLists() {
+            if (this.showAll) {
+                await this.getPageLists(this.pageList);
+            } else {
+                await this.getFavLists(this.pageList);
+            }
+            for (let i = 0; i < this.listsfavorits.length; i++)
+                if (this.listsfavorits[i].restaurants.length > 0) {
+                    for (let j = 0; j < this.listsfavorits[i].restaurants.length; j++) {
+                        await this.getResto(this.listsfavorits[i].restaurants[j].id)
                     }
                 }
+        },
+        // get page lists of all favorites
+        async getPageLists(page) {
+            try {
+                const headers = {
+                    Authorization: this.$cookies.get('token'),
+                };
+                const response = await this.$axios.get(`/favorites?page=${page}`, { headers: headers });
+                this.listsfavorits = response.data.items;
             } catch (error) {
                 console.log(error);
             }
         },
-        // create a new list of favorite and add this restaurant to this list
-        async createNewList() {
-            const params = {
-                access_token: this.$cookies.get('token'),
-                name: this.newListName,
-            };
-            const response = await this.$axios.post('/favorites', params);
-            console.log(response.data);
-        },
-        // get all lists of favorites
-        async getPageLists() {
+        // get page lists of my favorites
+        async getFavLists(page) {
             try {
-                const params = {
-                    access_token: this.$cookies.get('token'),
+                const id = this.$cookies.get('id');
+                const headers = {
+                    Authorization: this.$cookies.get('token'),
                 };
-                console.log('PAGE IN', this.pageList);
-                const response = await this.$axios.get('/favorites?page=' + this.pageList, { params });
-                console.log('LIST ALL', response.data.items);
-                this.listsFavorits = response.data.items;
+                const response = await this.$axios.get(`/users/${id}/favorites?page=${page}`, { headers: headers });
+                this.listsfavorits = response.data.items;
             } catch (error) {
                 console.log(error);
             }
@@ -150,38 +172,27 @@ export default {
                 const data = {
                     'id': this.restaurantId
                 };
-                console.log('DATA', data, this.restaurantId);
                 const response = await this.$axios.post(`/favorites/${idlist}/restaurants`, data, { headers: headers });
-                console.log('ADD RESTO', response.data);
-                // for (let i = 0; response.data.items.length; i++) {
-                //     if (response.data.items[i].id == this.restaurantId) {
-                //         this.already = true;
-                //     }
-                // }
+                await this.getLists()
+
             } catch (error) {
                 console.log(error);
             }
         },
-        // get data of restaurant NOT USE
+        // get data of restaurant
         async getResto(resto_id) {
             try {
-                const params = {
-                    access_token: this.$cookies.get('token'),
+                const headers = {
+                    Authorization: this.$cookies.get('token'),
                 };
-                const response = await this.$axios.get('/restaurants/' + resto_id, { params });
-                console.log('RESTO', response.data);
-            } catch (error) {
-                console.log(error);
-            }
-        },
-        // get data list of favorites : USLESS
-        async getList(ListId) {
-            try {
-                const params = {
-                    access_token: this.$cookies.get('token'),
-                };
-                const response = await this.$axios.get('/favorites/' + ListId, { params });
-                console.log('LIST id', response.data);
+                const response = await this.$axios.get(`/restaurants/${resto_id}`, { headers: headers });
+                for (let i = 0; i < this.listsfavorits.length; i++)
+                    if (this.listsfavorits[i].restaurants.length > 0) {
+                        for (let j = 0; j < this.listsfavorits[i].restaurants.length; j++) {
+                            if (this.listsfavorits[i].restaurants[j].id === resto_id)
+                                this.listsfavorits[i].restaurants[j].name = response.data.name;
+                        }
+                    }
             } catch (error) {
                 console.log(error);
             }
@@ -189,25 +200,23 @@ export default {
         // delete list of favorites
         async deleteList(id) {
             try {
-                const params = {
-                    access_token: this.$cookies.get('token'),
+                const headers = {
+                    Authorization: this.$cookies.get('token'),
                 };
-                const response = await this.$axios.delete('/favorites/' + id, { params });
-                console.log('LIST id', response.data);
-                await this.getPageLists();
+                const response = await this.$axios.delete('/favorites/' + id, { headers: headers });
+                await this.getLists();
             } catch (error) {
                 console.log(error);
             }
         },
-        // delete all lists of favorites
-        async deleteAllLists() {
-            let id = '';
+        // delete restaurant of list of favorites
+        async deleteResto(idlist, idresto) {
             try {
-                for (let i = 0; i < this.listsFavorits.length; i++) {
-                    id = this.listsFavorits[i].id;
-                    await this.deleteList(id);
-                }
-                await this.getPageLists();
+                const headers = {
+                    Authorization: this.$cookies.get('token'),
+                };
+                const response = await this.$axios.delete(`/favorites/${idlist}/restaurants/${idresto}`, { headers: headers });
+                await this.getLists();
             } catch (error) {
                 console.log(error);
             }
@@ -215,14 +224,14 @@ export default {
         // Navigation page
         async pagePrev() {
             this.pageList = this.pageList > 0 ? this.pageList - 1 : 0;
-            await this.getPageLists();
+            await this.getLists();
         },
         async pageNext() {
+            this.pageList = parseInt(this.pageList, 10);
             this.pageList = this.pageList >= 0 ? this.pageList + 1 : 0;
-            console.log('PAGE', this.pageList);
-            await this.getPageLists();
-            console.log('LIST', this.listsFavorits);
+            await this.getLists();
         },
+        // tool
         truncateItemName(name, maxLength) {
             if (name.length > maxLength) {
                 return name.slice(0, maxLength) + '...';

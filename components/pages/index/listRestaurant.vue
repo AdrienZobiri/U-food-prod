@@ -13,17 +13,15 @@
         <div v-if="displayFiler" class="filterBox">
             <div class="priceBox">
                 <div class="text-subtitle-1 textPrice">Selected Price:</div>
-                <div>
-                    <v-container fluid>
-                        <v-checkbox label="1" value="1" v-model="selected" @change="editList()"></v-checkbox>
-                        <v-checkbox label="2" value="2" v-model="selected" @change="editList()"></v-checkbox>
-                        <v-checkbox label="3" value="3" v-model="selected" @change="editList()"></v-checkbox>
-                    </v-container>
-                </div>
+                <v-container fluid class="selection">
+                    <v-checkbox label="1" value="1" v-model="selected" @change="editList()"></v-checkbox>
+                    <v-checkbox label="2" value="2" v-model="selected" @change="editList()"></v-checkbox>
+                    <v-checkbox label="3" value="3" v-model="selected" @change="editList()"></v-checkbox>
+                </v-container>
             </div>
             <div class="genderBox">
                 <div class="text-subtitle-1 textPrice">Selected Price:</div>
-                <v-container fluid>
+                <v-container fluid class="selection">
                     <v-checkbox label="desserts" value="desserts" v-model="selectedGender" @change="editList()"></v-checkbox>
                     <v-checkbox label="bistro" value="bistro" v-model="selectedGender" @change="editList()"></v-checkbox>
                     <v-checkbox label="ambiance" value="ambiance" v-model="selectedGender" @change="editList()"></v-checkbox>
@@ -237,6 +235,7 @@ export default {
 }
 .contentRestaurant {
     display: grid;
+    width: 100%;
     grid-template-columns: repeat(2, 40%);
     align-items: center;
     grid-column-gap: 10vw;
@@ -281,6 +280,19 @@ export default {
     .contentRestaurant {
         grid-template-columns: repeat(1, 100%);
         grid-column-gap: 0;
+    }
+
+    .filterBox {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .selection {
+        display: grid;
+        grid-template-columns: repeat(2, 50%);
+    }
+    .priceBox, .genderBox {
+        width: 100%;
     }
 }
 </style>

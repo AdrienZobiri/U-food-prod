@@ -7,6 +7,9 @@
       <div class="genre" v-for="(genre, index) in restaurantGenre" :key="index">
         <p>Genre: {{genre}}</p>
       </div>
+      <div class="genre">
+        <p>Price range: {{restaurantPriceRange}}</p>
+      </div>
       <div>
         {{restaurantAddress}}
       </div>
@@ -14,44 +17,30 @@
         <p>Tel: {{restaurantTel}}</p>
       </div>
     </div>
-
-    <div id="pricing">
-      <div class="star-pricing">
-        <input type="radio" id="star5" name="rating" value="5" v-model="Math.round(restaurantPriceRange)" disabled>
+    <div id="rating">
+      <div class="star-rating">
+        <input type="radio" id="star5" name="rating" value="5" v-model="Math.round(restaurantRating)" disabled>
         <label for="star5"></label>
-        <input type="radio" id="star4" name="rating" value="4" v-model="Math.round(restaurantPriceRange)" disabled>
+        <input type="radio" id="star4" name="rating" value="4" v-model="Math.round(restaurantRating)" disabled>
         <label for="star4"></label>
-        <input type="radio" id="star3" name="rating" value="3" v-model="Math.round(restaurantPriceRange)" disabled>
+        <input type="radio" id="star3" name="rating" value="3" v-model="Math.round(restaurantRating)" disabled>
         <label for="star3"></label>
-        <input type="radio" id="star2" name="rating" value="2" v-model="Math.round(restaurantPriceRange)" disabled>
+        <input type="radio" id="star2" name="rating" value="2" v-model="Math.round(restaurantRating)" disabled>
         <label for="star2"></label>
-        <input type="radio" id="star1" name="rating" value="1" v-model="Math.round(restaurantPriceRange)" disabled>
+        <input type="radio" id="star1" name="rating" value="1" v-model="Math.round(restaurantRating)" disabled>
         <label for="star1"></label>
       </div>
-    </div>
-  <div id="rating">
-    <div class="star-rating">
-      <input type="radio" id="star5" name="rating" value="5" v-model="Math.round(restaurantRating)" disabled>
-      <label for="star5"></label>
-      <input type="radio" id="star4" name="rating" value="4" v-model="Math.round(restaurantRating)" disabled>
-      <label for="star4"></label>
-      <input type="radio" id="star3" name="rating" value="3" v-model="Math.round(restaurantRating)" disabled>
-      <label for="star3"></label>
-      <input type="radio" id="star2" name="rating" value="2" v-model="Math.round(restaurantRating)" disabled>
-      <label for="star2"></label>
-      <input type="radio" id="star1" name="rating" value="1" v-model="Math.round(restaurantRating)" disabled>
-      <label for="star1"></label>
-    </div>
 
-    <div class="genre" v-for="(open, index) in restaurantOpeningHours" :key="index">
-      <p>{{index}}: {{open}}</p>
+      <div class="genre" v-for="(open, index) in restaurantOpeningHours" :key="index">
+        <p>{{index}}: {{open}}</p>
+      </div>
     </div>
   </div>
-    </div>
 </template>
 
 <script>
   export default {
+    name: "InfosRestaurantComponent",
     props: {
       restaurantName: {
         type: String,
@@ -81,6 +70,9 @@
         type: Array,
         required: true,
       },
+    },
+    mounted() {
+      console.log(this.restaurantRating)
     },
   }
 
@@ -149,5 +141,18 @@
 
   input[type="radio"]:checked ~ label::before {
     color: gold;
+  }
+  @media screen and (max-width: 1000px) {
+    #main {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    #rating {
+      align-items: flex-start;
+    }
+
   }
 </style>

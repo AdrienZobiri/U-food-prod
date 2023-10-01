@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <v-col>
         <ListRestaurant/>
-    </div>
+    </v-col>
 </template>
 
 <script>

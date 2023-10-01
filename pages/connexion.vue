@@ -1,6 +1,6 @@
 <template>
     <v-col>
-        <v-row class="text-h1 ma-3">
+        <v-row class="text-h2 ma-3">
             Connexion
         </v-row>
         <!-- :rules="[v => !!v || 'Confirm Password required', v => v === password || 'Passwords do not match']" -->
@@ -24,7 +24,7 @@
             </v-btn>
         </v-row>
         <v-row class="d-flex justify-center my-4" align="center">
-            <div :type="erno ? 'hidden' : 'text'">
+            <div class="red--text" :type="erno ? 'hidden' : 'text'">
                 {{ erno }}
             </div>
         </v-row>
@@ -34,7 +34,7 @@
 <script>
 import qs from 'querystring';
 export default {
-    name: "Connexion",
+    name: "DisplayConnexion",
     data() {
         return {
             email: '',
@@ -70,12 +70,18 @@ export default {
                 email: this.email,
                 password: this.password
             };
-            const response = await this.$axios.post('/login', params);
-            if (response.data.id && response.data.name) {
-                await this.storeCookies(response.data);
-                this.$router.push('/');
-            } else {
-                this.erno = "Erreur de connexion"
+
+            try {
+                const response = await this.$axios.post('/login', params);
+
+                if (response.data.id && response.data.name) {
+                    await this.storeCookies(response.data);
+                    this.$router.push('/');
+                } else {
+                    this.erno = "Internal server error"
+                }
+            } catch (error) {
+                this.erno = "Bad credentials"
             }
         },
         async register() {
@@ -90,13 +96,18 @@ export default {
                 }
             };
             const formData = qs.stringify(formData, config);
-            const response = await this.$axios.post('/signup', params);
-            if (response.data.id && response.data.name) {
-                await this.login()
-            } else {
-                this.erno = "Erreur d'enregistrement"
+
+            try {
+                const response = await this.$axios.post('/signup', params);
+
+                if (response.data.id && response.data.name) {
+                    await this.login()
+                } else {
+                    this.erno = "Erreur d'enregistrement"
+                }
+            } catch (error) {
+                this.erno = "Account already exist"
             }
-            // this.$emit('login');
         },
         async storeCookies(data) {
             this.$cookies.set('token', data.token);

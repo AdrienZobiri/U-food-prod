@@ -4,41 +4,35 @@
         <div>
             <v-app-bar dark>
                 <v-spacer></v-spacer>
-                <v-icon @click.stop="leftDrawer = !leftDrawer">mdi-account</v-icon>
+                <v-icon @click.stop="leftDrawer = !leftDrawer" v-if="leftDrawerButton">mdi-account</v-icon>
                 <v-spacer></v-spacer>
                 <div @click="pushIndex" class="text-h3 cursor">U-Food</div>
                 <v-spacer></v-spacer>
-                <v-icon @click.stop="rightDrawer = !rightDrawer">mdi-star</v-icon>
+                <v-icon @click.stop="rightDrawer = !rightDrawer" v-if="rightDrawerButton">mdi-star</v-icon>
                 <v-spacer></v-spacer>
             </v-app-bar>
-            <!-- Account bar right -->
-            <v-navigation-drawer v-model="leftDrawer" absolute left temporary width="500">
+            <!-- Account bar left -->
+            <v-navigation-drawer v-model="leftDrawer" absolute left temporary width="500" height="100vh">
                 <div class="d-flex justify-end fixed">
                     <v-btn @click="back" class="d-flex justify-end ">
                         <v-icon @click="back">mdi-arrow-right-thick</v-icon>
                     </v-btn>
                 </div>
-                <DisplayUserSettings @update="update()" />
-                <div v-if="leftDrawer" class="d-flex align-end justify-center mt-4">
-                    <v-btn @click="logout" v-if=(token)>
-                        Deconnexion
-                        <v-icon>mdi-logout</v-icon>
-                    </v-btn>
-                </div>
-                <DisplayHistory @close="leftDrawer = false" />
+                <DisplayUserSettings @update="update()" @close="leftDrawer = false" />
+                <DisplayHistory @update="update()" @close="leftDrawer = false" />
             </v-navigation-drawer>
 
-            <!-- Favorite bar left -->
-            <v-navigation-drawer v-if="rightDrawer" v-model="rightDrawer" absolute right temporary>
+            <!-- Favorite bar right -->
+            <v-navigation-drawer v-if="rightDrawer" v-model="rightDrawer" absolute right temporary width="500" height="100vh">
                 <v-btn @click="back" v-if="rightDrawer">
                     <v-icon @click="back">mdi-arrow-left-thick</v-icon>
                 </v-btn>
-                <DisplayFavourites />
+                <DisplayFavorites />
             </v-navigation-drawer>
 
             <!-- Main Page -->
             <v-container class="d-flex flex-column mt-9 mb-10 pb-0 align-center">
-                <v-main>
+                <v-main class="mainClass">
                     <Nuxt />
                 </v-main>
                 <v-footer absolute app class=" mb-0 justify-center">
@@ -53,29 +47,41 @@
 <script>
 import DisplayHistory from "@/components/pages/profil/DisplayHistory.vue";
 import DisplayUserSettings from "@/components/pages/profil/DisplayUserSettings.vue";
-import DisplayFavourites from "@/components/pages/favoris/DisplayFavourites.vue";
+import DisplayFavorites from "@/components/pages/favoris/DisplayFavorites.vue";
 
 export default {
     name: 'DefaultLayout',
     data() {
         return {
+            leftDrawerButton: true,
+            rightDrawerButton: true,
             leftDrawer: false,
-            rightDrawer: false,
-            token: this.$cookies.get('token')
+            rightDrawer: false
         }
     },
     components: {
         DisplayUserSettings,
         DisplayHistory,
-        DisplayFavourites
+        DisplayFavorites
+    },
+    watch: {
+        $route() {
+            if (this.$router.currentRoute.name !== 'connexion') {
+                this.rightDrawerButton = true
+                this.leftDrawerButton = true
+            } else {
+                this.rightDrawerButton = false
+                this.leftDrawerButton = false
+            }
+        }
     },
     async mounted() {
         await this.load();
     },
     methods: {
         async load() {
-            if (this.$router.currentRoute.name != 'connexion' && !this.$cookies.get('token')) {
-                this.$router.push('/connexion');
+            if (this.$router.currentRoute.name !== 'connexion' && !this.$cookies.get('token')) {
+                await this.$router.push('/connexion');
             }
         },
         back() {
@@ -89,25 +95,14 @@ export default {
             this.token = this.$cookies.get('token')
             console.log("update")
         },
-        async logout() {
-            const response = await this.$axios.post('/logout');
-            await this.eraseCookies();
-            location.reload();
-        },
-        async eraseCookies() {
-            this.$cookies.set('token', '');
-            this.$cookies.set('id', '');
-            this.$cookies.set('email', '');
-            this.$cookies.set('name', '');
-            this.$cookies.set('rating', '');
-            this.$cookies.set('followers', '');
-            this.$cookies.set('following', '');
-        }
     }
 }
 </script>
 
 <style>
+.mainClass {
+    width: 90vw;
+}
 .cursor {
     cursor: pointer;
 }
