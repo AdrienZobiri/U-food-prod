@@ -9,7 +9,7 @@
 export default {
   data() {
     return {
-      restaurantId: this.$route.params.id,
+      restaurantId: this.$cookies.get('restaurantId'),
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution:
         '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -21,27 +21,20 @@ export default {
     };
   },
   async mounted() {
-    console.log("testt", this.long)
-    console.log(this.lat)
     try {
-      const params = {
-        access_token: this.$cookies.get('token'),
+      const headers = {
+        authorization: this.$cookies.get('token'),
       };
-      const response = await this.$axios.get('/restaurants/' + this.restaurantId, { params });
-
-      const responseData = response.data;
-      console.log(responseData)
-
-      this.lat = responseData.location.coordinates[0];
-      this.long = responseData.location.coordinates[1];
-      console.log("test")
+      const response = await this.$axios.get('/restaurants/' + this.restaurantId, { headers: headers });
+      this.lat = parseFloat(response.data.location.coordinates[0]);
+      this.long = parseFloat(response.data.location.coordinates[1]);
+      this.center = [this.long, this.lat]
+      this.markerLatLng = [this.long, this.lat]
     } catch (error) {
       console.error('Erreur lors de la récupération des données :', error);
     }
-    this.center = [this.long, this.lat]
-    this.markerLatLng = [this.long, this.lat]
   }
-}
+};
 </script>
 
 <style scoped>

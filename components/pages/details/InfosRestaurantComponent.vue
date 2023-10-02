@@ -51,7 +51,6 @@
         required: true,
       },
       restaurantOpeningHours: {
-        type: Array,
         required: true,
       },
       restaurantTel: {
@@ -59,20 +58,15 @@
         required: true,
       },
       restaurantRating: {
-        type: Number,
         required: true,
       },
       restaurantPriceRange: {
-        type: Number,
         required: true,
       },
       restaurantGenre : {
         type: Array,
         required: true,
       },
-    },
-    mounted() {
-      console.log(this.restaurantRating)
     },
   }
 

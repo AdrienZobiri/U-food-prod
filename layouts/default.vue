@@ -23,7 +23,8 @@
             </v-navigation-drawer>
 
             <!-- Favorite bar right -->
-            <v-navigation-drawer v-if="rightDrawer" v-model="rightDrawer" absolute right temporary width="500" height="100vh">
+            <v-navigation-drawer v-if="rightDrawer" v-model="rightDrawer" absolute right temporary width="500"
+                height="100vh">
                 <v-btn @click="back" v-if="rightDrawer">
                     <v-icon @click="back">mdi-arrow-left-thick</v-icon>
                 </v-btn>
@@ -32,9 +33,7 @@
 
             <!-- Main Page -->
             <v-container class="d-flex flex-column mt-9 mb-10 pb-0 align-center">
-                <v-main class="mainClass">
-                    <Nuxt />
-                </v-main>
+                <Nuxt class="mainClas" />
                 <v-footer absolute app class=" mb-0 justify-center">
                     <span class="ma-0 pa-0">ufood - Project</span>
                     <span class="ma-0 pa-0">&copy; 2023</span>
@@ -56,7 +55,8 @@ export default {
             leftDrawerButton: true,
             rightDrawerButton: true,
             leftDrawer: false,
-            rightDrawer: false
+            rightDrawer: false,
+            loged: false,
         }
     },
     components: {
@@ -93,7 +93,6 @@ export default {
         },
         update() {
             this.token = this.$cookies.get('token')
-            console.log("update")
         },
     }
 }
@@ -103,6 +102,7 @@ export default {
 .mainClass {
     width: 90vw;
 }
+
 .cursor {
     cursor: pointer;
 }

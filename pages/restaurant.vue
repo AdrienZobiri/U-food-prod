@@ -11,7 +11,7 @@
                                       :restaurantLocationLong="restaurantLocationLong"
                                       :restaurantLocationLat="restaurantLocationLat" />
         </v-row>
-        <v-row>
+        <v-row class="justify-center">
             <AddFavourites :restaurantId="restaurantId"/>
         </v-row>
         <v-row class="py-9">
@@ -26,6 +26,7 @@ import InfosRestaurantComponent from "~/components/pages/details/InfosRestaurant
 import PhotosRestaurantComponent from "~/components/pages/details/PhotosRestaurantComponent.vue";
 import MapRestaurantComponent from "../components/pages/details/MapRestaurantComponent.vue";
 export default {
+    name: 'Restaurant',
     data() {
         return {
             restaurantName: '',
@@ -40,35 +41,36 @@ export default {
             restaurantLocationLat: '',
             restaurantLocationLong: '',
             restaurantLocationUrl: '',
-            restaurantId: this.$route.params.id
-        };
+            restaurantId: this.$cookies.get('restaurantId'),
+        }
     },
     async mounted() {
+        await this.cookiesManager();
         await this.fetchDataFromAPI();
     },
     methods: {
+        async cookiesManager() {
+            if (this.restaurantId === null || this.restaurantId === undefined) {
+                this.$router.push('/');
+            }
+        },
         async fetchDataFromAPI() {
             try {
-                const params = {
-                    access_token: this.$cookies.get('token'),
+                const headers = {
+                    authorization: this.$cookies.get('token'),
                 };
-                const response = await this.$axios.get('/restaurants/' + this.restaurantId, { params });
-
-                const responseData = response.data;
-                console.log(responseData)
-
-                this.restaurantOpeningHours = responseData.opening_hours;
-                this.restaurantPictures = responseData.pictures;
-                this.restaurantName = responseData.name;
-                this.restaurantPlaceId = responseData.place_id;
-                this.restaurantAddress = responseData.address;
-                this.restaurantTel = responseData.tel;
-                this.restaurantRating = responseData.rating;
-                this.restaurantPriceRange = responseData.price_range;
-                this.restaurantGenre = responseData.genres;
-                this.restaurantLocationLat = responseData.location.coordinates[0];
-                this.restaurantLocationLong = responseData.location.coordinates[1];
-                console.log("test")
+                const response = await this.$axios.get('/restaurants/' + this.restaurantId, { headers: headers });
+                this.restaurantOpeningHours = response.data.opening_hours;
+                this.restaurantPictures = response.data.pictures;
+                this.restaurantName = response.data.name;
+                this.restaurantPlaceId = response.data.place_id;
+                this.restaurantAddress = response.data.address;
+                this.restaurantTel = response.data.tel;
+                this.restaurantRating = response.data.rating;
+                this.restaurantPriceRange = response.data.price_range;
+                this.restaurantGenre = response.data.genres;
+                this.restaurantLocationLat = response.data.location.coordinates[0];
+                this.restaurantLocationLong = response.data.location.coordinates[1];
             } catch (error) {
                 console.error('Erreur lors de la récupération des données :', error);
             }

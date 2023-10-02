@@ -6,10 +6,10 @@
                 <div class="text-subtitle-1">{{restaurant.name}}</div>
             </div>
             <div v-if="visited" class="align-center">
-                <div @click="modal = !modal" class="text-subtitle-2">Visited</div>
+                <div @click="modal = !modal" class="text-subtitle-2 visited">Visited</div>
             </div>
             <div v-else class="align-center">
-                <div @click="modal = !modal" class="text-subtitle-2">Not visited</div>
+                <div @click="modal = !modal" class="text-subtitle-2 visited">Not visited</div>
             </div>
         </div>
         <v-dialog
@@ -86,13 +86,10 @@ export default {
                 access_token: this.$cookies.get('token')
             };
 
-            console.log(this.restaurant);
-            console.log(params);
             try {
                 const id = this.$cookies.get('id');
                 const response = await this.$axios.post(`/users/${id}/restaurants/visits`, params);
 
-                console.log(response);
                 location.reload();
             } catch (e) {
                 console.log(e)
@@ -103,6 +100,10 @@ export default {
 </script>
 
 <style scoped>
+.visited:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
 .contentInfo {
     display: flex;
     justify-content: space-between;

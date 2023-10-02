@@ -7,7 +7,7 @@
                 :src="item"
             ></v-carousel-item>
         </v-carousel>
-    </div>  
+    </div>
 </template>
 
 <script>
@@ -24,7 +24,8 @@ export default {
         }
     },
     methods: {
-        goToRestaurant(id) {
+        async goToRestaurant(id) {
+            await this.$cookies.set('restaurantId', id)
             this.$router.push({ name: 'restaurant', params: { id: id } })
         }
     }

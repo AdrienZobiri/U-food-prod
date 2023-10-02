@@ -4,7 +4,7 @@
         <v-switch v-model="regis" :label="`New list ?`" />
         <v-text-field v-if="regis" v-model="newListName" label="Name of the list"
             :rules="[v => !!v || 'Name required', v => /^[a-zA-Z0-9]+$/.test(v) || 'Name invalid']" :counter="50"
-            :maxlength="50" required></v-text-field>
+            :maxlength="50" required @keyup.enter="createNewList()"></v-text-field>
         <v-btn v-if="regis" :disabled="!newListName" color="green darken-1" text @click="createNewList()">
             Create
         </v-btn>
@@ -60,36 +60,25 @@
 <script>
 export default {
     name: 'DisplayFavorites',
-    // props: {
-    //   restaurants: Array,
-    // }
     data() {
         return {
             editMode: false,
-            listActive: '',
+            listActive: '', // unused for the moment but need to keep
             dialog: false,
             listsfavorits: [],
             already: false,
             newListName: '',
             regis: false,
-            userId: this.$cookies.get('id'),
             pageList: 0,
             showAll: false,
         }
     },
-    mounted() {
-        this.getLists();
+    async mounted() {
+        await this.getLists();
     },
     methods: {
-        // create a new list of favorite and add this restaurant to this list
-        async createNewList() {
-            const headers = {
-                Authorization: this.$cookies.get('token'),
-                name: this.newListName,
-            };
-            const response = await this.$axios.post(`/favorites`, { headers: headers });
-            this.listsfavorits.push(response.data);
-        },
+        ////////////////////////////
+
         // get page lists of favorites
         async getLists() {
             if (this.showAll) {
@@ -108,7 +97,7 @@ export default {
         async getPageLists(page) {
             try {
                 const headers = {
-                    Authorization: this.$cookies.get('token'),
+                    authorization: this.$cookies.get('token'),
                 };
                 const response = await this.$axios.get(`/favorites?page=${page}`, { headers: headers });
                 this.listsfavorits = response.data.items;
@@ -121,7 +110,7 @@ export default {
             try {
                 const id = this.$cookies.get('id');
                 const headers = {
-                    Authorization: this.$cookies.get('token'),
+                    authorization: this.$cookies.get('token'),
                 };
                 const response = await this.$axios.get(`/users/${id}/favorites?page=${page}`, { headers: headers });
                 this.listsfavorits = response.data.items;
@@ -129,10 +118,11 @@ export default {
                 console.log(error);
             }
         },
+        // get and set restaurant name
         async getResto(resto_id) {
             try {
                 const headers = {
-                    Authorization: this.$cookies.get('token'),
+                    authorization: this.$cookies.get('token'),
                 };
                 const response = await this.$axios.get(`/restaurants/${resto_id}`, { headers: headers });
                 for (let i = 0; i < this.listsfavorits.length; i++)
@@ -146,11 +136,48 @@ export default {
                 console.log(error);
             }
         },
+        ////////////////////////////
+
+        // create a new list of favorite and add this restaurant to this list
+        async createNewList() {
+            try {
+                const headers = {
+                    authorization: this.$cookies.get('token'),
+                };
+                const data = {
+                    'name': `${this.newListName}`,
+                }
+                const response = await this.$axios.post(`/favorites`, data, { headers: headers });
+                this.listsfavorits.push(response.data);
+                this.newListName = '';
+                this.regis = false;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        // add restaurant to list of favorites
+        async addResto(idlist) {
+            try {
+                const headers = {
+                    authorization: this.$cookies.get('token'),
+                };
+                const data = {
+                    'id': this.restaurantId
+                };
+                const response = await this.$axios.post(`/favorites/${idlist}/restaurants`, data, { headers: headers });
+                await this.getLists()
+
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        ////////////////////////////
+
         // delete list of favorites
         async deleteList(id) {
             try {
                 const headers = {
-                    Authorization: this.$cookies.get('token'),
+                    authorization: this.$cookies.get('token'),
                 };
                 const response = await this.$axios.delete('/favorites/' + id, { headers: headers });
                 await this.getLists();
@@ -162,7 +189,7 @@ export default {
         async deleteResto(idlist, idresto) {
             try {
                 const headers = {
-                    Authorization: this.$cookies.get('token'),
+                    authorization: this.$cookies.get('token'),
                 };
                 const response = await this.$axios.delete(`/favorites/${idlist}/restaurants/${idresto}`, { headers: headers });
                 await this.getLists();
@@ -170,6 +197,8 @@ export default {
                 console.log(error);
             }
         },
+        ////////////////////////////
+
         // Navigation page
         async pagePrev() {
             this.pageList = this.pageList > 0 ? this.pageList - 1 : 0;
@@ -181,14 +210,17 @@ export default {
             await this.getLists();
         },
         truncateItemName(name, maxLength) {
-            if (name.length > maxLength) {
-                return name.slice(0, maxLength) + '...';
+            try {
+                if (name && name.length > maxLength) {
+                    return name.slice(0, maxLength) + '...';
+                }
+                return name;
+            } catch (error) {
+                console.log(error);
             }
-            return name;
         }
     }
 }
-
 </script>
 
 <style>

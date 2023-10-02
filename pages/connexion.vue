@@ -1,32 +1,36 @@
 <template>
-    <v-col>
-        <v-row class="text-h2 ma-3">
+    <v-col class="d-flex flex-column align-center pa-2">
+        <v-row class="text-h2">
             Connexion
         </v-row>
         <!-- :rules="[v => !!v || 'Confirm Password required', v => v === password || 'Passwords do not match']" -->
         <!-- :disabled="regis ? false : true" :required="regis ? false : true" type="password" -->
-        <v-row class="d-flex justify-center mb-4" align="center">
-            <v-text-field v-if="regis" v-model="username" label="Name" />
-        </v-row>
-        <v-row class="d-flex justify-center mb-4" align="center">
-            <v-text-field v-model="email" name="email" label="Email"
-                :rules="[v => !!v || 'Email required', v => /.+@.+\..+/.test(v) || 'Email invalid']" required />
-        </v-row>
-        <v-row class="d-flex justify-center mb-4" align="center">
-            <v-text-field v-model="password" name="password" label="Password"
-                :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'" :type="show ? 'text' : 'password'"
-                :rules="[v => !!v || 'Password required']" required @click:append="show = !show" />
-        </v-row>
-        <v-switch v-model="regis" :label="`Crée un compte ?`" />
-        <v-row class="d-flex justify-center my-4" align="center">
-            <v-btn :disabled="!password" color="blue" class="text-h4 pa-6" @click="sender">
-                {{ regis ? 'Register' : 'Login' }}
-            </v-btn>
-        </v-row>
-        <v-row class="d-flex justify-center my-4" align="center">
-            <div class="red--text" :type="erno ? 'hidden' : 'text'">
-                {{ erno }}
-            </div>
+        <v-row class="d-flex flex-column px-0">
+            <v-col>
+                <v-text-field v-if="regis" v-model="username" label="Name" />
+            </v-col>
+            <v-col>
+                <v-text-field v-model="email" name="email" label="Email"
+                    :rules="[v => !!v || 'Email required', v => /.+@.+\..+/.test(v) || 'Email invalid']" required />
+            </v-col>
+            <v-col>
+                <v-text-field v-model="password" name="password" label="Password"
+                    :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'" :type="show ? 'text' : 'password'"
+                    :rules="[v => !!v || 'Password required']" required @click:append="show = !show" />
+            </v-col>
+            <v-col>
+                <v-switch v-model="regis" :label="`Crée un compte ?`" />
+            </v-col>
+            <v-col class="d-flex justify-center my-4">
+                <v-btn :disabled="!password" color="blue" class="text-h4 pa-6" @click="sender">
+                    {{ regis ? 'Register' : 'Login' }}
+                </v-btn>
+            </v-col>
+            <v-col class="d-flex justify-center my-4">
+                <div class="red--text" :type="erno ? 'hidden' : 'text'">
+                    {{ erno }}
+                </div>
+            </v-col>
         </v-row>
     </v-col>
 </template>
@@ -110,6 +114,7 @@ export default {
             }
         },
         async storeCookies(data) {
+            console.log(data.token);
             this.$cookies.set('token', data.token);
             this.$cookies.set('id', data.id);
             this.$cookies.set('email', data.email);

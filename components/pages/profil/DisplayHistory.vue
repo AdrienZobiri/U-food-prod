@@ -28,6 +28,12 @@ export default {
         await this.getHistory()
         this.checkArray()
     },
+    watch: {
+        async $route() {
+            await this.getHistory()
+            this.checkArray()
+        }
+    },
     methods:{
         async getHistory() {
             if (!this.$cookies.get('token')) {
@@ -39,7 +45,6 @@ export default {
                 access_token: this.$cookies.get('token')
             }
             const response = await this.$axios.get('/users/'+ id +'/restaurants/visits/', { params })
-            console.log(response.data.items);
 
             this.listRestaurants = response.data.items
             await this.getRestaurants()
@@ -48,7 +53,6 @@ export default {
                 acc[id] = (acc[id] || 0) + 1;
                 return acc;
             }, {});
-            console.log(count);
             this.addName()
             // delete duplicate in listRestaurants
             this.listRestaurants = this.listRestaurants.filter((restaurantVisite, index, self) =>
@@ -61,7 +65,6 @@ export default {
                 const restaurantVisite = this.listRestaurants[i];
                 restaurantVisite.nbVisit = count[restaurantVisite.restaurant_id]
             }
-            console.log(this.listRestaurants);
 
         },
         async getRestaurants() {

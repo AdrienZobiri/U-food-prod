@@ -60,6 +60,7 @@ export default {
         }
     },
     async mounted() {
+        this.$cookies.set('restaurantId', null)
         await this.getRestaurants();
         await this.getVisitedRestaurants();
     },
@@ -72,7 +73,6 @@ export default {
                 };
 
                 const response = await this.$axios.get('/users/' + id + '/restaurants/visits', { params })
-                console.log(response.data.items)
                 for (let y = 0; y < this.restaurants.length; y++) {
                     this.restaurants[y].visited = false
                     for (let i = 0; i < response.data.items.length; i++) {
@@ -112,7 +112,6 @@ export default {
                     i--
                 }
             }
-            console.log(this.restaurantsFilter)
         },
         shearchFilter(value) {
             for (let i = 0; i < this.restaurantsFilter.length; i++) {
@@ -127,7 +126,6 @@ export default {
         genderFilter() {
             for (let i = 0; i < this.restaurantsFilter.length; i++) {
                 for (let y = 0; y < this.restaurantsFilter[i].genres.length; y++) {
-                    console.log(this.restaurantsFilter[i].genres[y])
                     if (this.selectedGender.includes(this.restaurantsFilter[i].genres[y])) {
                         this.restaurantsFilter[i].validGender = true
                     }
@@ -286,7 +284,7 @@ export default {
         display: flex;
         flex-direction: column;
     }
-    
+
     .selection {
         display: grid;
         grid-template-columns: repeat(2, 50%);
