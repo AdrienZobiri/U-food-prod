@@ -1,152 +1,100 @@
 <template>
-  <div id="main">
-    <div id="title" >
-      <div class="restaurantName">
-      {{restaurantName}}
-      </div>
-      <div class="genre" v-for="(genre, index) in restaurantGenre" :key="index">
-        <p>Genre: {{genre}}</p>
-      </div>
-      <div class="genre">
-        <p>Price range: {{restaurantPriceRange}}</p>
-      </div>
-      <div>
-        {{restaurantAddress}}
-      </div>
-      <div>
-        <p>Tel: {{restaurantTel}}</p>
-      </div>
-    </div>
-    <div id="rating">
-      <div class="star-rating">
-        <input type="radio" id="star5" name="rating" value="5" v-model="Math.round(restaurantRating)" disabled>
-        <label for="star5"></label>
-        <input type="radio" id="star4" name="rating" value="4" v-model="Math.round(restaurantRating)" disabled>
-        <label for="star4"></label>
-        <input type="radio" id="star3" name="rating" value="3" v-model="Math.round(restaurantRating)" disabled>
-        <label for="star3"></label>
-        <input type="radio" id="star2" name="rating" value="2" v-model="Math.round(restaurantRating)" disabled>
-        <label for="star2"></label>
-        <input type="radio" id="star1" name="rating" value="1" v-model="Math.round(restaurantRating)" disabled>
-        <label for="star1"></label>
-      </div>
-
-      <div class="genre" v-for="(open, index) in restaurantOpeningHours" :key="index">
-        <p>{{index}}: {{open}}</p>
-      </div>
-    </div>
-  </div>
+  <v-container class="d-flex flex-column" height="100%">
+    <v-card>
+      <v-card-title class="text-h3 justify-center" style="word-break: break-word">
+        {{ restaurant.name }}
+      </v-card-title>
+      <v-row class="d-flex justify-center">
+        <v-col class="py-0 d-flex justify-end align-center" style="word-break: break-word">
+          <AddFavourites />
+        </v-col>
+        <v-col class="py-0 d-flex justify-start align-center" style="word-break: break-word">
+          <Visited :modal="modal" :visited="restaurant.visited" />
+        </v-col>
+      </v-row>
+      <v-card-text class="d-flex flex-row flex-wrap text-h5 pa-0 justify-center">
+        Servicies
+        <div v-for="(genre, index) in restaurant.genre" :key="index" class="text-h5 pa-0">
+          , {{ genre }}
+        </div>
+      </v-card-text>
+      <v-card-text class="text-h5 d-flex justify-center">
+        <v-btn :href="'tel:' + restaurant.tel">
+          <v-icon>
+            mdi-phone
+          </v-icon>
+          +1
+          {{ restaurant.tel }}
+        </v-btn>
+      </v-card-text>
+      <v-card-text class="text-h5 d-flex pa-0 justify-center">
+        User appreciation :
+      </v-card-text>
+      <v-card-text class="d-flex flex-row pa-0 justify-center">
+        <v-list v-for="index in restaurant.rating" :key="index">
+          <v-tooltip top color="primary">
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon v-bind="attrs" v-on="on">
+                mdi-star
+              </v-icon>
+            </template>
+            <span> Appretiation client {{ restaurant.rating }} / 5 </span>
+          </v-tooltip>
+        </v-list>
+      </v-card-text>
+      <v-card-text class="d-flex flex-row pa-0 justify-center">
+        <v-list v-for="i in restaurant.price_range" :key="i">
+          <v-tooltip bottom color="primary">
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon v-bind="attrs" v-on="on">
+                mdi-currency-usd
+              </v-icon>
+            </template>
+            <span> Almighty dollar {{ restaurant.price_range }} / 3 </span>
+          </v-tooltip>
+        </v-list>
+      </v-card-text>
+      <v-card-text class="text-h5 d-flex pa-0 justify-center">
+        Usual opening hours :
+      </v-card-text>
+      <!-- xs="1" sm="3" md="3" xl="3" -->
+      <!-- xs="1" sm="4" md="6" xl="8" -->
+      <v-card-text v-for="(open, index) in restaurant.opening_hours" :key="index" class="text-h5 my-0 justify-center">
+        <v-row class="justify-center">
+          <v-col class="py-0 d-flex justify-end" style="word-break: break-word">
+            {{ index }}
+          </v-col>
+          <v-col class="py-0">
+            {{ open }}
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-text class="d-flex justify-center">
+        {{ restaurant.adress }}
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
-  export default {
-    name: "InfosRestaurantComponent",
-    props: {
-      restaurantName: {
-        type: String,
-        required: true,
-      },
-      restaurantAddress: {
-        type: String,
-        required: true,
-      },
-      restaurantOpeningHours: {
-        required: true,
-      },
-      restaurantTel: {
-        type: String,
-        required: true,
-      },
-      restaurantRating: {
-        required: true,
-      },
-      restaurantPriceRange: {
-        required: true,
-      },
-      restaurantGenre : {
-        type: Array,
-        required: true,
-      },
+import AddFavourites from "~/components/pages/favoris/AddFavourites.vue";
+import Visited from "~/components/common/visited.vue";
+export default {
+  name: "InfosRestaurantComponent",
+  data() {
+    return {
+      modal: false,
+    };
+  },
+  components: {
+    AddFavourites,
+    Visited
+  },
+  props: {
+    restaurant: {
+      type: Object,
+      required: true,
     },
   }
-
+}
 </script>
-
-<style>
-  #main {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    height: 100%;
-  }
-
-  #title {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    color: white;
-  }
-
-  #rating {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    color: white;
-    text-align: right;
-  }
-
-  #pricing {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    color: white;
-    text-align: right;
-  }
-  .restaurantName {
-    font-size: 30px;
-  }
-
-  .genre {
-    font-size: 20px;
-  }
-
-  .star-rating {
-    display: inline-block;
-  }
-  .star-pricing {
-    display: inline-block;
-  }
-
-  input[type="radio"] {
-    display: none;
-  }
-
-  label {
-    font-size: 30px;
-    padding: 5px;
-    cursor: pointer;
-  }
-
-  label::before {
-    content: "★";
-    display: inline-block;
-    color: transparent;
-  }
-
-  input[type="radio"]:checked ~ label::before {
-    color: gold;
-  }
-  @media screen and (max-width: 1000px) {
-    #main {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-    }
-
-    #rating {
-      align-items: flex-start;
-    }
-
-  }
-</style>

@@ -1,44 +1,63 @@
 <template>
-  <l-map style="height: 300px" :zoom="zoom" :center="center" class="map">
-    <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-    <l-marker :lat-lng="markerLatLng"></l-marker>
-  </l-map>
+  <v-container class="d-flex flex-column justify-center pt-0">
+    <div class="d-inline-flex justify-center pb-2">
+      <v-btn rounded color="primary" @click="openGoogleMapsDirections">
+        <v-icon>mdi-walk</v-icon>
+        Partir maintenant
+        <v-icon>mdi-directions</v-icon>
+      </v-btn>
+    </div>
+    <div class="map-container justify-center">
+      <div>
+        <GmapMap :center="markerPosition" :zoom="14" style="width: 100%; height: 600px" class="mb-5">
+          <GmapMarker :position="markerPosition"></GmapMarker>
+        </GmapMap>
+      </div>
+    </div>
+  </v-container>
 </template>
 
 <script>
 export default {
+  name: 'MapRestaurantComponent',
+  props: {
+    restaurant: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
-      restaurantId: this.$cookies.get('restaurantId'),
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution:
-        '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      zoom: 15,
-      long: 0,
-      lat: 0,
-      center: [0, 0],
-      markerLatLng: [0, 0]
+      markerPosition: {
+        lat: -70,
+        lng: 0,
+      },
     };
   },
   async mounted() {
     try {
-      const headers = {
-        authorization: this.$cookies.get('token'),
-      };
-      const response = await this.$axios.get('/restaurants/' + this.restaurantId, { headers: headers });
-      this.lat = parseFloat(response.data.location.coordinates[0]);
-      this.long = parseFloat(response.data.location.coordinates[1]);
-      this.center = [this.long, this.lat]
-      this.markerLatLng = [this.long, this.lat]
+      this.markerPosition.lat = parseFloat(this.restaurant.location.coordinates[1]);
+      this.markerPosition.lng = parseFloat(this.restaurant.location.coordinates[0]);
+      this.$refs.mapRef.$mapPromise.then((map) => {
+        map.panTo(this.markerPosition);
+      });
     } catch (error) {
-      console.error('Erreur lors de la récupération des données :', error);
+      console.error('Error map loading :', error);
     }
-  }
+  },
+  methods: {
+    openGoogleMapsDirections() {
+      const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${this.markerPosition.lat},${this.markerPosition.lng}`;
+      window.open(directionsUrl, '_blank');
+    },
+  },
 };
 </script>
 
 <style scoped>
-.map {
+.map-container {
+  width: 100%;
+  height: 600px;
   z-index: 1;
 }
 </style>
